@@ -19,8 +19,12 @@ module ToSlug
     # character
     value = self.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n, '').to_s
     
-    # Remove single quotes from input
-    value.gsub!(/[']+/, '')
+    # Remove single quotes and backticks from input
+    value.gsub!(/['`]+/, '')
+
+    # @ --> at, and & --> and
+    value.gsub! /\s*@\s*/, " at "
+    value.gsub! /\s*&\s*/, " and "
 
     # Replace any non-word character (\W) with a space
     value.gsub!(/\W+/, ' ')
@@ -33,7 +37,16 @@ module ToSlug
     
     # Replace spaces with dashes
     value.gsub!(' ', '-')
-    
+  
+    #convert double dashes to single
+    value.gsub! /-+/,"-"
+
+    #convert double underscores to single
+    value.gsub! /_+/,"_"
+
+    #strip off leading/trailing dashes and underscores
+    value.gsub! /\A[-_\.]+|[-_\.]+\z/,""
+
     # Return the resulting slug
     value
   end
